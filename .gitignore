@@ -1,0 +1,118 @@
+# Dependencies
+/node_modules
+/vendor
+/public/hot
+/public/storage
+/storage/*.key
+/storage/*.pub
+/storage/*.pem
+
+# Environment files
+.env
+.env.backup
+.env.production
+.env.local
+.env.*.local
+.env.testing
+*.env
+
+# Laravel specific
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+!storage/framework/cache/.gitignore
+!storage/framework/sessions/.gitignore
+!storage/framework/testing/.gitignore
+!storage/framework/views/.gitignore
+!storage/logs/.gitignore
+/bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# Compiled assets
+/public/build
+/public/mix-manifest.json
+/public/hot
+
+# IDE and Editor files
+/.fleet
+/.idea
+/.vscode
+/.vs
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.phpstorm.meta.php
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Testing
+/.phpunit.result.cache
+/.phpunit.cache
+/coverage
+/.phpunit.php
+# phpunit.xml should typically be committed, but uncomment if you use phpunit.xml.dist instead
+# /phpunit.xml
+
+# Deployment and Build
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+# Note: composer.lock and package-lock.json should be committed for consistent dependencies
+# Uncomment the following if you prefer not to commit them:
+# composer.lock
+# package-lock.json
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+*.bak
+*.swp
+*.swo
+*~
+.cache
+
+# Backup files
+*.backup
+*.old
+*.orig
+
+# Archive files (if not needed)
+*.zip
+*.tar
+*.tar.gz
+*.rar
+
+# Database files (but keep migrations)
+*.sqlite
+*.sqlite-journal
+*.db
+# Don't ignore .sql files as they might be migrations or seeds
+# Add specific database files if needed, e.g.:
+# database.sqlite
+
+# Laravel Sail
+/.docker
+
+# Miscellaneous
+*.pid
+*.pid.lock
+
+# Seed files (uncomment if you don't want to track seed files)
+# *.seed

@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: attendance-tracker
+    env: php
+    buildCommand: composer install --optimize-autoloader --no-dev && npm install && npm run build
+    startCommand: php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: LOG_CHANNEL
+        value: stack
+
+databases:
+  - name: attendance-db
+    plan: free
+    databaseName: attendance_tracker
+    user: attendance_user
+
