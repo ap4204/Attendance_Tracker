@@ -107,8 +107,8 @@ pnpm-debug.log
 # Add specific database files if needed, e.g.:
 # database.sqlite
 
-# Laravel Sail
-/.docker
+# # Laravel Sail
+# /.docker
 
 # Miscellaneous
 *.pid
