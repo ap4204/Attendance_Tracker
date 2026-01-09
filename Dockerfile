@@ -5,13 +5,21 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
+    libpq-dev \
     zip \
     unzip \
     git \
-    curl
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions
-RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+# Install PHP extensions (PostgreSQL, NOT MySQL)
+RUN docker-php-ext-install \
+    pdo_pgsql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd
 
 # Enable Apache modules
 RUN a2enmod rewrite headers
@@ -22,22 +30,21 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project
+# Copy project files
 COPY . .
 
-# 🔑 CREATE REQUIRED LARAVEL DIRECTORIES (CRITICAL)
+# Create required Laravel directories
 RUN mkdir -p bootstrap/cache \
-    && mkdir -p storage/framework/sessions \
-    && mkdir -p storage/framework/views \
-    && mkdir -p storage/framework/cache \
+    storage/framework/sessions \
+    storage/framework/views \
+    storage/framework/cache \
     && chmod -R 775 bootstrap storage
 
-# Install dependencies
-RUN composer install
+# Install Laravel dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Run migrations automatically on deploy
+# Run migrations (safe for Neon)
 RUN php artisan migrate --force || true
-
 
 # Set ownership for Apache
 RUN chown -R www-data:www-data /var/www/html
