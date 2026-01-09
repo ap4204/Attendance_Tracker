@@ -1,3 +1,20 @@
+# =====================================================
+# 1️⃣ FRONTEND BUILD STAGE (Node + Vite)
+# =====================================================
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+
+# =====================================================
+# 2️⃣ BACKEND STAGE (PHP + Apache)
+# =====================================================
 FROM php:8.3-apache
 
 # ---------------- SYSTEM DEPENDENCIES ----------------
@@ -10,18 +27,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl \
-    nodejs \
-    npm
-
-# ---------------- PHP EXTENSIONS ----------------
-RUN docker-php-ext-install \
-    pdo_mysql \
-    pdo_pgsql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd
+    && docker-php-ext-install \
+        pdo_pgsql \
+        mbstring \
+        exif \
+        pcntl \
+        bcmath \
+        gd
 
 # ---------------- APACHE ----------------
 RUN a2enmod rewrite headers
@@ -31,23 +43,19 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# ---------------- COPY PROJECT ----------------
+# ---------------- COPY BACKEND CODE ----------------
 COPY . .
+
+# ---------------- COPY BUILT FRONTEND ----------------
+COPY --from=frontend /app/public/build /var/www/html/public/build
 
 # ---------------- LARAVEL DIRECTORIES ----------------
 RUN mkdir -p bootstrap/cache \
     storage/framework/{sessions,views,cache} \
     && chmod -R 775 bootstrap storage
 
-# ---------------- BACKEND ----------------
+# ---------------- COMPOSER INSTALL ----------------
 RUN composer install --no-dev --optimize-autoloader
-
-# ---------------- FRONTEND (THIS FIXES YOUR ERROR) ----------------
-RUN npm install
-RUN npm run build
-
-# ---------------- DATABASE ----------------
-RUN php artisan migrate --force || true
 
 # ---------------- PERMISSIONS ----------------
 RUN chown -R www-data:www-data /var/www/html
