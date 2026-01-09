@@ -1,55 +1,50 @@
 FROM php:8.3-apache
 
-# Install system dependencies
+# ---------------- SYSTEM DEPENDENCIES ----------------
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libonig-dev \
     libxml2-dev \
-    libpq-dev \
     zip \
     unzip \
     git \
     curl \
-    && rm -rf /var/lib/apt/lists/*
+    nodejs \
+    npm
 
-# Install PHP extensions (PostgreSQL, NOT MySQL)
-RUN docker-php-ext-install \
-    pdo_pgsql \
-    mbstring \
-    exif \
-    pcntl \
-    bcmath \
-    gd
+# ---------------- PHP EXTENSIONS ----------------
+RUN docker-php-ext-install pdo_mysql pdo_pgsql mbstring exif pcntl bcmath gd
 
-# Enable Apache modules
+# ---------------- APACHE ----------------
 RUN a2enmod rewrite headers
 
-# Install Composer
+# ---------------- COMPOSER ----------------
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
+# ---------------- COPY PROJECT ----------------
 COPY . .
 
-# Create required Laravel directories
+# ---------------- LARAVEL DIRS ----------------
 RUN mkdir -p bootstrap/cache \
-    storage/framework/sessions \
-    storage/framework/views \
-    storage/framework/cache \
+    storage/framework/{sessions,views,cache} \
     && chmod -R 775 bootstrap storage
 
-# Install Laravel dependencies
+# ---------------- PHP DEPS ----------------
 RUN composer install --no-dev --optimize-autoloader
 
-# Run migrations (safe for Neon)
+# ---------------- FRONTEND BUILD (CRITICAL) ----------------
+RUN npm install
+RUN npm run build
+
+# ---------------- MIGRATIONS ----------------
 RUN php artisan migrate --force || true
 
-# Set ownership for Apache
+# ---------------- PERMISSIONS ----------------
 RUN chown -R www-data:www-data /var/www/html
 
-# Apache config
+# ---------------- APACHE CONFIG ----------------
 COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
