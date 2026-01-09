@@ -35,6 +35,10 @@ RUN mkdir -p bootstrap/cache \
 # Install dependencies
 RUN composer install
 
+# Run migrations automatically on deploy
+RUN php artisan migrate --force || true
+
+
 # Set ownership for Apache
 RUN chown -R www-data:www-data /var/www/html
 
