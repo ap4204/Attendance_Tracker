@@ -39,14 +39,14 @@ RUN mkdir -p bootstrap/cache \
     storage/framework/{sessions,views,cache} \
     && chmod -R 775 bootstrap storage
 
-# ---------------- PHP DEPENDENCIES ----------------
+# ---------------- BACKEND ----------------
 RUN composer install --no-dev --optimize-autoloader
 
-# ---------------- FRONTEND BUILD (VITE FIX) ----------------
+# ---------------- FRONTEND (THIS FIXES YOUR ERROR) ----------------
 RUN npm install
 RUN npm run build
 
-# ---------------- DATABASE MIGRATIONS ----------------
+# ---------------- DATABASE ----------------
 RUN php artisan migrate --force || true
 
 # ---------------- PERMISSIONS ----------------
