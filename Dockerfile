@@ -25,14 +25,20 @@ WORKDIR /var/www/html
 # Copy project
 COPY . .
 
+# 🔑 CREATE REQUIRED LARAVEL DIRECTORIES (CRITICAL)
+RUN mkdir -p bootstrap/cache \
+    && mkdir -p storage/framework/sessions \
+    && mkdir -p storage/framework/views \
+    && mkdir -p storage/framework/cache \
+    && chmod -R 775 bootstrap storage
+
 # Install dependencies
 RUN composer install
 
-# Set permissions
-RUN chown -R www-data:www-data storage bootstrap/cache
+# Set ownership for Apache
+RUN chown -R www-data:www-data /var/www/html
 
 # Apache config
 COPY .docker/apache.conf /etc/apache2/sites-available/000-default.conf
 
 EXPOSE 80
-
